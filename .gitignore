@@ -1,0 +1,7 @@
+.venv/
+venv/
+*.aux
+*.log
+*.out
+bst/
+sn-article-template/

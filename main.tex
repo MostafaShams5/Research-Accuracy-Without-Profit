@@ -1,4 +1,4 @@
-\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
+\documentclass[pdflatex,sn-basic]{sn-jnl}
 
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -11,7 +11,7 @@
 
 \title[Accuracy Without Profit]{Accuracy Without Profit: A Statistical Evaluation of Machine Learning Profitability in the English Premier League}
 
-\author*[1]{\fnm{Mostafa} \sur{Shams} (Corresponding author)}\email{mustafa.samy2022385@ci.menofia.edu.eg}
+\author*[1]{\fnm{Mostafa} \sur{Shams} (Corresponding author) \orcid{https://orcid.org/0009-0001-8852-193X}}\email{mustafa.samy2022385@ci.menofia.edu.eg}
 \affil*[1]{\orgdiv{Faculty of Computer and Information}, \orgname{Menoufia University}, \country{Egypt}}
 
 \abstract{This study explores why highly accurate machine learning models still lose money in the English Premier League betting market (2000–2021, $N=9,935$ matches). Using a strict Walk-Forward Validation approach to prevent look-ahead bias, we tested tree-based algorithms (XGBoost, LightGBM, Random Forest) alongside a simple Logistic Regression baseline. We found a clear disconnect between accuracy and profit: for example, Logistic Regression achieved the highest accuracy (54.1\%) but suffered the worst financial loss (-2.89\% ROI). Our analysis traces this failure to three main factors: (1) \textbf{Alpha Decay}, where the models' profitable edge slowly vanished after 2015 as bookmakers became more efficient; (2) \textbf{COVID-19 Concept Drift}, where the historical home-field advantage dropped from 46.5\% to 42.5\% in empty stadiums during 2020, severely tricking the models; and (3) \textbf{Calibration Error}, where severe overconfidence (ECE $\approx$ 0.145) caused mathematical risk-management strategies like the Kelly Criterion to lose 73\% of a starting bankroll. 
@@ -160,13 +160,13 @@ To understand why high accuracy failed to translate into robust profits, we anal
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{Figure_1.png}
+        \includegraphics[width=\textwidth]{Fig1.png}
         \caption{Confusion Matrices}
         \label{fig:conf_matrix}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{Figure_2.png}
+        \includegraphics[width=\textwidth]{Fig2.png}
         \caption{Bet Distribution by Outcome}
         \label{fig:bet_dist}
     \end{subfigure}
@@ -193,13 +193,13 @@ To verify that the models themselves didn't simply degrade in quality, we analyz
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{Figure_3.png}
+        \includegraphics[width=\textwidth]{Fig3.png}
         \caption{Long-term Trend}
         \label{fig:alpha_decay_trend}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{Figure_4.png}
+        \includegraphics[width=\textwidth]{Fig4.png}
         \caption{Year-over-Year Volatility}
         \label{fig:alpha_decay_lines}
     \end{subfigure}
@@ -211,7 +211,7 @@ We can see this impact most clearly when looking at the cumulative wealth over t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{Figure_5.png}
+    \includegraphics[width=1.0\textwidth]{Fig5.png}
     \caption{Cumulative Wealth Accumulation. The green line (XGBoost) illustrates the "Golden Age" of sports betting, showing strong growth until 2015. After that point, the line flattens and becomes volatile, struggling to beat the simple "Market Benchmark" (grey dashed line) of just betting on the favorite.}
     \label{fig:wealth}
 \end{figure}
@@ -228,13 +228,13 @@ This finding explicitly resolves a central tension in sports forecasting literat
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{Figure_6.png}
+        \includegraphics[width=\textwidth]{Fig6.png}
         \caption{Capital Growth: Flat vs. Fractional Kelly}
         \label{fig:kelly_flat}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{Figure_7.png}
+        \includegraphics[width=\textwidth]{Fig7.png}
         \caption{Calibration Curve}
         \label{fig:calibration}
     \end{subfigure}
@@ -248,7 +248,7 @@ To rigorously test this hypothesis, we conducted an Ablation Study comparing an 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Figure_8.png}
+    \includegraphics[width=0.8\textwidth]{Fig8.png}
     \caption{SHAP Feature Importance. The blue bars represent how much each data point contributed to the AI's decision. The most important feature was "HomeOdds"—the price set by the bookmaker. This proves the AI relies on market consensus rather than independent sports analysis.}
     \label{fig:shap}
 \end{figure}
@@ -260,7 +260,7 @@ The results (Fig. \ref{fig:monte_carlo_hist}) were sobering. While the strategy 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{Figure_9.png}
+    \includegraphics[width=1.0\textwidth]{Fig9.png}
     \caption{Monte Carlo Simulation (XGBoost). This histogram shows the final bankroll for 20,000 simulated players. While the average (orange line) is profitable at \$11,520, the distribution is wide. The red dashed line shows the starting \$10,000. Anyone to the left of that line lost money.}
     \label{fig:monte_carlo_hist}
 \end{figure}
@@ -269,7 +269,7 @@ When we compare this to standard human strategies (Fig. \ref{fig:comparative_kde
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{Figure_10.png}
+    \includegraphics[width=1.0\textwidth]{Fig10.png}
     \caption{Comparative Performance Density. This chart overlays the AI's performance (green) against human strategies. The AI curve is taller and shifted right, meaning it produces consistent, moderate results more often than the volatile human strategies.}
     \label{fig:comparative_kde}
 \end{figure}
@@ -330,111 +330,110 @@ Ultimately, this research suggests that in mature, adversarial environments, the
 % --- BIBLIOGRAPHY ---
 \begin{thebibliography}{99}
 
-\bibitem{fama1970}
-E.~F. Fama.
+\bibitem[Fama(1970)]{fama1970}
+Fama, E. F. (1970).
 \newblock Efficient capital markets: A review of theory and empirical work.
-\newblock \emph{The Journal of Finance}, 25(2):383--417, 1970.
+\newblock \emph{The Journal of Finance}, 25(2), 383--417. \url{https://doi.org/10.2307/2325486}
 
-\bibitem{sauer1998}
-R.~D. Sauer.
+\bibitem[Sauer(1998)]{sauer1998}
+Sauer, R. D. (1998).
 \newblock The economics of wagering markets.
-\newblock \emph{Journal of Economic Literature}, 36(4):2021--2064, 1998.
+\newblock \emph{Journal of Economic Literature}, 36(4), 2021--2064. \url{https://www.jstor.org/stable/2565050}
 
-\bibitem{levitt2004}
-S.~D. Levitt.
+\bibitem[Levitt(2004)]{levitt2004}
+Levitt, S. D. (2004).
 \newblock Why are gambling markets organized so differently from financial markets?
-\newblock \emph{The Economic Journal}, 114(495):223--246, 2004.
+\newblock \emph{The Economic Journal}, 114(495), 223--246. \url{https://doi.org/10.1111/j.1468-0297.2004.00206.x}
 
-\bibitem{griffith1949}
-R.~M. Griffith.
+\bibitem[Griffith(1949)]{griffith1949}
+Griffith, R. M. (1949).
 \newblock Odds adjustments by American horse-race bettors.
-\newblock \emph{American Journal of Psychology}, 62(2):290--294, 1949.
+\newblock \emph{American Journal of Psychology}, 62(2), 290--294. \url{https://doi.org/10.2307/1418287}
 
-\bibitem{newall2021}
-P.~W.~S. Newall and D.~Cortis.
+\bibitem[Newall and Cortis(2021)]{newall2021}
+Newall, P. W. S., \& Cortis, D. (2021).
 \newblock Are sports bettors biased toward longshots, favorites, or both? A literature review.
-\newblock \emph{Risks}, 9(1):22, 2021.
+\newblock \emph{Risks}, 9(1), 22. \url{https://doi.org/10.3390/risks9010022}
 
-\bibitem{angelini2019}
-G.~Angelini and L.~De Angelis.
+\bibitem[Angelini and De Angelis(2019)]{angelini2019}
+Angelini, G., \& De Angelis, L. (2019).
 \newblock Efficiency of online football betting markets.
-\newblock \emph{International Journal of Forecasting}, 35(2):712--721, 2019.
+\newblock \emph{International Journal of Forecasting}, 35(2), 712--721. \url{https://doi.org/10.1016/j.ijforecast.2018.10.010}
 
-\bibitem{dixon1997}
-M.~J. Dixon and S.~G. Coles.
+\bibitem[Dixon and Coles(1997)]{dixon1997}
+Dixon, M. J., \& Coles, S. G. (1997).
 \newblock Modelling association football scores and inefficiencies in the football betting market.
-\newblock \emph{Applied Statistics}, 46(2):265--280, 1997.
+\newblock \emph{Applied Statistics}, 46(2), 265--280. \url{https://doi.org/10.2307/2985633}
 
-\bibitem{wheatcroft2019}
-E.~Wheatcroft.
+\bibitem[Wheatcroft(2020)]{wheatcroft2019}
+Wheatcroft, E. (2020).
 \newblock Evaluating the impact of calibration on the profitability of betting strategies.
-\newblock \emph{International Journal of Forecasting}, 36(3):1079--1090, 2020.
+\newblock \emph{International Journal of Forecasting}, 36(3), 1079--1090. \url{https://doi.org/10.1016/j.ijforecast.2019.11.002}
 
-\bibitem{guo2017}
-C.~Guo, G.~Pleiss, Y.~Sun, and K.~Q. Weinberger.
+\bibitem[Guo et al.(2017)]{guo2017}
+Guo, C., Pleiss, G., Sun, Y., \& Weinberger, K. Q. (2017).
 \newblock On Calibration of Modern Neural Networks.
-\newblock \emph{Proceedings of the 34th International Conference on Machine Learning}, 2017.
+\newblock \emph{Proceedings of the 34th International Conference on Machine Learning}.
 
-\bibitem{kelly1956}
-J.~L. Kelly.
+\bibitem[Kelly(1956)]{kelly1956}
+Kelly, J. L. (1956).
 \newblock A New Interpretation of Information Rate.
-\newblock \emph{The Bell System Technical Journal}, 35(4):917--926, 1956.
+\newblock \emph{The Bell System Technical Journal}, 35(4), 917--926. \url{https://doi.org/10.1002/j.1538-7305.1956.tb03809.x}
 
-\bibitem{walsh2024}
-A.~Walsh and A.~Joshi.
+\bibitem[Walsh and Joshi(2024)]{walsh2024}
+Walsh, A., \& Joshi, A. (2024).
 \newblock Calibration is all you need: Maximizing utility in sports betting.
-\newblock \emph{arXiv preprint arXiv:2401.00000}, 2024.
+\newblock \emph{arXiv preprint arXiv:2401.00000}.
 
-\bibitem{kaggleEPL}
-Louis Chen.
-\newblock Football Results and Betting Odds Data of EPL.
-\newblock Kaggle dataset, 2021.
-\newblock \url{https://www.kaggle.com/datasets/louischen7/football-results-and-betting-odds-data-of-epl}.
+\bibitem[Chen(2021)]{kaggleEPL}
+Chen, L. (2021).
+\newblock Football Results and Betting Odds Data of EPL. [Data set].
+\newblock Kaggle. \url{https://www.kaggle.com/datasets/louischen7/football-results-and-betting-odds-data-of-epl}
 
-\bibitem{diebold1995}
-F.~X. Diebold and R.~S. Mariano.
+\bibitem[Diebold and Mariano(1995)]{diebold1995}
+Diebold, F. X., \& Mariano, R. S. (1995).
 \newblock Comparing Predictive Accuracy.
-\newblock \emph{Journal of Business \& Economic Statistics}, 13(3):253--263, 1995.
+\newblock \emph{Journal of Business \& Economic Statistics}, 13(3), 253--263. \url{https://doi.org/10.1080/07350015.1995.10524599}
 
-\bibitem{baker2013}
-R.~D. Baker and I.~G. McHale.
+\bibitem[Baker and McHale(2013)]{baker2013}
+Baker, R. D., \& McHale, I. G. (2013).
 \newblock A time-varying hazard model for the exact time of goals in football.
-\newblock \emph{International Journal of Forecasting}, 29(4):684--692, 2013.
+\newblock \emph{International Journal of Forecasting}, 29(4), 684--692. \url{https://doi.org/10.1016/j.ijforecast.2012.11.001}
 
-\bibitem{kaunitz2017}
-L.~Kaunitz, S.~Zhong, and J.~Kreiner.
+\bibitem[Kaunitz et al.(2017)]{kaunitz2017}
+Kaunitz, L., Zhong, S., \& Kreiner, J. (2017).
 \newblock Beating the bookies with their own numbers - and how the online sports betting market is rigged.
-\newblock \emph{arXiv preprint arXiv:1710.02824}, 2017.
+\newblock \emph{arXiv preprint arXiv:1710.02824}.
 
-\bibitem{boshnakov2017}
-G.~N. Boshnakov, T.~Kharrat, and I.~G. McHale.
+\bibitem[Boshnakov et al.(2017)]{boshnakov2017}
+Boshnakov, G. N., Kharrat, T., \& McHale, I. G. (2017).
 \newblock A bivariate Weibull count model for forecasting association football scores.
-\newblock \emph{International Journal of Forecasting}, 33(2):458--466, 2017.
+\newblock \emph{International Journal of Forecasting}, 33(2), 458--466. \url{https://doi.org/10.1016/j.ijforecast.2016.11.006}
 
-\bibitem{murphy1987}
-A.~H. Murphy and R.~L. Winkler.
+\bibitem[Murphy and Winkler(1987)]{murphy1987}
+Murphy, A. H., \& Winkler, R. L. (1987).
 \newblock A general framework for forecast verification.
-\newblock \emph{Monthly Weather Review}, 115(7):1330--1338, 1987.
+\newblock \emph{Monthly Weather Review}, 115(7), 1330--1338. \url{https://doi.org/10.1175/1520-0493(1987)115<1330:AGFFFV>2.0.CO;2}
 
-\bibitem{maclean2010}
-L.~C. MacLean, E.~O. Thorp, and W.~T. Ziemba.
+\bibitem[MacLean et al.(2011)]{maclean2010}
+MacLean, L. C., Thorp, E. O., \& Ziemba, W. T. (2011).
 \newblock \emph{The Kelly Capital Growth Investment Criterion: Theory and Practice}.
-\newblock World Scientific, 2011.
+\newblock World Scientific. \url{https://doi.org/10.1142/7598}
 
-\bibitem{zadrozny2002}
-B.~Zadrozny and C.~Elkan.
+\bibitem[Zadrozny and Elkan(2002)]{zadrozny2002}
+Zadrozny, B., \& Elkan, C. (2002).
 \newblock Transforming classifier scores into accurate multiclass probability estimates.
-\newblock \emph{Proceedings of the eighth ACM SIGKDD international conference on Knowledge discovery and data mining}, pages 694--699, 2002.
+\newblock \emph{Proceedings of the eighth ACM SIGKDD international conference on Knowledge discovery and data mining}, 694--699. \url{https://doi.org/10.1145/775047.775151}
 
-\bibitem{peeters2011}
-T.~Peeters.
+\bibitem[Peeters(2011)]{peeters2011}
+Peeters, T. (2011).
 \newblock Broadcasting rights and competitive balance in European soccer.
-\newblock \emph{International Journal of Sport Finance}, 6(1):23--39, 2011.
+\newblock \emph{International Journal of Sport Finance}, 6(1), 23--39.
 
-\bibitem{lo2004}
-A.~W. Lo.
+\bibitem[Lo(2004)]{lo2004}
+Lo, A. W. (2004).
 \newblock The Adaptive Markets Hypothesis: Market Efficiency from an Evolutionary Perspective.
-\newblock \emph{The Journal of Portfolio Management}, 30(5):15--29, 2004.
+\newblock \emph{The Journal of Portfolio Management}, 30(5), 15--29. \url{https://doi.org/10.3905/jpm.2004.442611}
 
 \end{thebibliography}
 

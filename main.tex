@@ -11,7 +11,7 @@
 
 \title[Accuracy Without Profit]{Accuracy Without Profit: A Statistical Evaluation of Machine Learning Profitability in the English Premier League}
 
-\author*[1]{\fnm{Mostafa} \sur{Shams} (Corresponding author) \orcid{https://orcid.org/0009-0001-8852-193X}}\email{mustafa.samy2022385@ci.menofia.edu.eg}
+\author*[1]{\fnm{Mostafa} \sur{Shams} (Corresponding author, ORCID: \url{https://orcid.org/0009-0001-8852-193X})}\email{mustafa.samy2022385@ci.menofia.edu.eg}
 \affil*[1]{\orgdiv{Faculty of Computer and Information}, \orgname{Menoufia University}, \country{Egypt}}
 
 \abstract{This study explores why highly accurate machine learning models still lose money in the English Premier League betting market (2000–2021, $N=9,935$ matches). Using a strict Walk-Forward Validation approach to prevent look-ahead bias, we tested tree-based algorithms (XGBoost, LightGBM, Random Forest) alongside a simple Logistic Regression baseline. We found a clear disconnect between accuracy and profit: for example, Logistic Regression achieved the highest accuracy (54.1\%) but suffered the worst financial loss (-2.89\% ROI). Our analysis traces this failure to three main factors: (1) \textbf{Alpha Decay}, where the models' profitable edge slowly vanished after 2015 as bookmakers became more efficient; (2) \textbf{COVID-19 Concept Drift}, where the historical home-field advantage dropped from 46.5\% to 42.5\% in empty stadiums during 2020, severely tricking the models; and (3) \textbf{Calibration Error}, where severe overconfidence (ECE $\approx$ 0.145) caused mathematical risk-management strategies like the Kelly Criterion to lose 73\% of a starting bankroll. 

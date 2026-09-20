@@ -1,0 +1,403 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- PACKAGES ---
+\usepackage[margin=1in]{geometry} % Set margins
+\usepackage[utf8]{inputenc}       % Handle text encoding
+\usepackage{graphicx}             % For including images
+\usepackage{booktabs}             % For professional tables
+\usepackage{amsmath}              % For math symbols (like \times)
+\usepackage[affil-it]{authblk}    % For author affiliations
+\usepackage{float}                % For figure placement
+\usepackage{caption}              % For better captions
+\usepackage{subcaption}           % For side-by-side figures
+\usepackage{xurl}              
+\usepackage{hyperref}            
+
+% --- METADATA ---
+\title{Accuracy Without Profit: A Statistical Evaluation of Machine Learning Profitability in the English Premier League}
+\author[1]{Mostafa Shams}
+\affil[1]{\normalfont Faculty of Computer and Information Menoufia University, Egypt}
+\affil[ ]{\normalfont \href{mailto:mustafa.samy2022385@ci.menofia.edu.eg}{\texttt{mustafa.samy2022385@ci.menofia.edu.eg}}}
+\date{}
+
+% --- FONT CONFIG ---
+\renewcommand\Authfont{\normalfont\Large}
+\renewcommand\Affilfont{\normalfont\normalsize}
+\renewcommand{\refname}{Works Cited}
+
+\begin{document}
+
+\maketitle
+
+% --- ABSTRACT ---
+\begin{abstract}
+This study evaluates the limits of machine learning profitability in the English Premier League betting market (2000–2021). Using a rigorous Walk-Forward Validation approach to prevent look-ahead bias, we tested three standard algorithms (XGBoost, LightGBM, and Random Forest) against the efficient market consensus. While the models achieved statistical distinctness from bookmaker odds (confirmed via Diebold-Mariano tests), they failed to generate consistent risk-adjusted returns. Our analysis isolates two drivers for this failure: (1) \textbf{Alpha Decay}, where the predictive edge dissipated significantly post-2015, and (2) \textbf{Calibration Error} (ECE $\approx$ 0.11), where model overconfidence caused standard risk-management strategies like the Kelly Criterion to increase bankruptcy risk rather than wealth. These findings suggest that in mature prediction markets, "Accuracy" is a misleading metric, and Probability Calibration is the primary barrier to profitability.
+
+\vspace{0.4em}
+\noindent \textbf{Reproducibility:} All code, datasets, and full statistical reports generated during this study are publicly available for review and replication at: \url{https://github.com/MostafaShams5/Predicting-EPL-Winners-But-Losing-Money-With-Data-Science}.
+\end{abstract}
+
+% --- INTRODUCTION ---
+\section{Introduction}
+
+Predicting the future is the central goal of data science. However, not all datasets are created equal. Some are static, waiting to be solved, while others are "adversarial"—meaning there is an opponent on the other side actively trying to prevent correct prediction. Sports betting provides a laboratory for studying these adversarial environments. Unlike the stock market, which acts as a continuous flow of prices, a sports match has a definite start and end. The "price" (the odds) is set by bookmakers who are highly motivated to be accurate. If a predictive model can consistently beat these odds, it proves that the market has a leak—an inefficiency that can be exploited. Conversely, if a sophisticated model cannot make a profit, it suggests the market has become "efficient," meaning the price already reflects all available information.
+
+This paper investigates the evolution of this efficiency. While early research often found small cracks in the bookmakers' armor, we ask: "How has the market learned to beat machine learning?"
+
+To answer this, we applied three machine learning architectures to twenty-one years of English Premier League football data (2000–2021). Our approach was strictly historical. We did not let the models "peek" at the future; we trained them season by season, exactly as a data scientist would have done in real time.
+
+The results indicate a structural break in market efficiency. We found that while complex algorithms are indeed distinct from the bookmaker's odds—meaning they have their own "opinion"—they are no longer profitable. Our analysis reveals a clear timeline: strategies that generated reliable profits in the mid-2000s slowly degraded until the edge effectively evaporated around 2015. Furthermore, we identified a critical flaw in how these models operate. While they are often correct about who will win, they are consistently overconfident about their chances. This gap between confidence and reality—known as calibration error—is what ultimately causes financial strategies to fail in a modern, efficient market.
+
+% --- RELATED WORK ---
+\section{Related Work and Background}
+
+Before detailing our experiments, it is necessary to contextualize our findings within the broader literature of sports economics and statistical modeling. While the application of modern Machine Learning to sports betting is a relatively new field, it rests on two well-established pillars of research: the economic theory of Efficient Markets and the statistical problem of Probability Calibration.
+
+\subsection{The Efficient Market and the Strategic Bookmaker}
+The primary obstacle to profitable prediction is the Efficient Market Hypothesis (EMH). Originally proposed for financial markets, the theory suggests that asset prices already contain all known information, making consistent profit impossible without inside information \cite{fama1970}. In the specific context of sports, Sauer (1998) refined this into the "Efficient Forecast Hypothesis," arguing that wagering markets are efficient if the closing odds are unbiased predictors of match outcomes \cite{sauer1998}.
+
+However, sports betting markets differ from financial markets in one critical way: the presence of an active opponent. Levitt (2004) argues that bookmakers are not merely passive market-makers but "adversarial agents." They are highly skilled at setting prices that not only reflect true probabilities but also exploit human biases—such as the "favorite-longshot bias"—to maximize their own profit while minimizing risk \cite{levitt2004, griffith1949}. This creates a strategic environment where a predictive model is not just solving a math problem, but battling an optimized pricing algorithm.
+
+Early research often found small cracks in this armor. Studies from the 1990s and early 2000s identified persistent inefficiencies \cite{newall2021, angelini2019}. However, as our study aims to demonstrate, the gap between "market efficiency" and "model accuracy" has closed significantly in the big-data era.
+
+\subsection{From Statistical History to Calibration Errors}
+To beat these efficient markets, researchers initially relied on parametric statistical models. The foundational work by Dixon and Coles (1997) established that simple averages are insufficient; models must account for time-decay, weighting recent match results more heavily than older ones \cite{dixon1997}. This concept of "recent form" remains a standard feature in modern engineering, including our own.
+
+As the field moved from statistical models to Machine Learning (e.g., Random Forests and Neural Networks), the metric for success shifted. In standard classification tasks, we optimize for Accuracy. However, recent literature argues that in betting environments, Accuracy is a misleading metric. Wheatcroft (2020) demonstrated that a strategy's profitability is far more sensitive to "Calibration Error" than to raw predictive accuracy \cite{wheatcroft2019}.
+
+This distinction is critical. If a model predicts a 60\% probability of a win, but the event occurs only 50\% of the time, the model is "miscalibrated" \cite{guo2017}. Walsh and Joshi (2024) recently confirmed that when using risk-management strategies like the Kelly Criterion \cite{kelly1956}, calibration-optimized models significantly outperform accuracy-optimized ones \cite{walsh2024}. If a model overestimates its own certainty, the Kelly criterion will command it to bet too aggressively, transforming a potentially winning strategy into a losing one.
+
+
+\section{Methodology and Data}
+
+To ensure our results were robust, we utilized a testing method that strictly followed the flow of time, preventing the common mistake of using future data to predict the past.
+
+\subsection{The Dataset: English Premier League (2000–2021)}
+Our primary dataset covers twenty-one seasons of English top-flight football \cite{kaggleEPL}. The original raw data contained detailed match statistics and odds from multiple bookmakers (including Bet365, William Hill, and VC Bet).
+
+To create a consistent input for the models, we performed the following preprocessing steps:
+\begin{enumerate}
+    \item \textbf{Market Consensus (Odds):} We utilized the average odds across all available major bookmakers for Home Win, Draw, and Away Win. This ensures the model is training on the global market opinion rather than a single provider's price.
+    \item \textbf{Team Fundamentals (Feature Engineering):} We engineered rolling window features representing each team's form over the Last 5 Games (L5). Specifically, we computed L5 averages for Points, Goals Conceded, Shots, Shots on Target, and Corners. This transforms raw match results into trend metrics.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\caption{Snapshot of Transformed Input Data (First 10 Rows)}
+\label{tab:data_snapshot}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lllc|ccc|ccccc|ccccc@{}}
+\toprule
+\textbf{Date} & \textbf{Home} & \textbf{Away} & \textbf{FTR} & \textbf{HO} & \textbf{DO} & \textbf{AO} & \textbf{H\_Pts} & \textbf{H\_GC} & \textbf{H\_S} & \textbf{H\_ST} & \textbf{H\_C} & \textbf{A\_Pts} & \textbf{A\_GC} & \textbf{A\_S} & \textbf{A\_ST} & \textbf{A\_C} \\ \midrule
+2001-08-20 & Everton & Tottenham & D & 2.25 & 3.20 & 2.75 & 3.0 & 1.0 & 12.0 & 9.0 & 4.0 & 1.0 & 0.0 & 8.0 & 2.0 & 6.0 \\
+2001-08-21 & Ipswich & Derby & H & 1.66 & 3.30 & 4.50 & 0.0 & 1.0 & 10.0 & 4.0 & 1.0 & 3.0 & 1.0 & 7.0 & 3.0 & 4.0 \\
+2001-08-21 & Bolton & Middlesbr. & H & 2.20 & 3.25 & 2.75 & 3.0 & 0.0 & 18.0 & 8.0 & 5.0 & 0.0 & 4.0 & 6.0 & 2.0 & 2.0 \\
+2001-08-21 & Arsenal & Leeds & A & 1.72 & 3.25 & 4.20 & 3.0 & 0.0 & 14.0 & 9.0 & 6.0 & 3.0 & 0.0 & 16.0 & 6.0 & 10.0 \\
+2001-08-22 & Blackburn & Man Utd & D & 4.50 & 3.30 & 1.66 & 0.0 & 2.0 & 14.0 & 4.0 & 10.0 & 3.0 & 2.0 & 12.0 & 6.0 & 6.0 \\
+2001-08-22 & Fulham & Sunderland & H & 1.90 & 3.20 & 3.50 & 0.0 & 3.0 & 8.0 & 5.0 & 4.0 & 3.0 & 0.0 & 12.0 & 6.0 & 1.0 \\
+2001-08-25 & Arsenal & Leicester & H & 1.22 & 5.00 & 9.50 & 1.5 & 1.0 & 14.0 & 7.0 & 8.0 & 0.0 & 5.0 & 6.0 & 1.0 & 3.0 \\
+2001-08-25 & Blackburn & Tottenham & H & 2.30 & 3.10 & 2.75 & 0.5 & 2.0 & 13.0 & 4.5 & 6.5 & 1.0 & 0.5 & 7.5 & 2.0 & 3.0 \\
+2001-08-25 & Everton & Middlesbr. & H & 2.00 & 3.10 & 3.30 & 2.0 & 1.0 & 15.0 & 10.0 & 6.0 & 0.0 & 2.5 & 8.5 & 3.0 & 2.0 \\
+2001-08-25 & Fulham & Derby & D & 1.50 & 3.40 & 6.00 & 1.5 & 1.5 & 10.5 & 5.0 & 6.0 & 1.5 & 2.0 & 4.5 & 2.5 & 3.0 \\ \bottomrule
+\end{tabular}%
+}
+\vspace{0.5em}
+\raggedright
+\small{\textit{Note: FTR = Full Time Result. HO/DO/AO = Home/Draw/Away Odds (Averaged). H\_/A\_ = Home/Away Team L5 Rolling Averages. Pts=Points, GC=Goals Conceded, S=Shots, ST=Shots on Target, C=Corners.}}
+\end{table}
+
+\subsection{Model Specifications}
+We treated the sports betting problem as a multi-class classification task with three target classes: Home Win ($H$), Draw ($D$), and Away Win ($A$). The feature set consisted of 13 variables: 3 market-implied odds and 10 fundamental team metrics. We utilized three standard, widely accessible machine learning architectures:
+
+\begin{itemize}
+    \item \textbf{XGBoost:} Trained using the \texttt{multi:softprob} objective to output probabilities, using \texttt{mlogloss} as the evaluation metric.
+    \item \textbf{LightGBM:} Trained using the \texttt{multiclass} objective with Gradient Boosting Decision Trees (GBDT).
+    \item \textbf{Random Forest:} Constructed as a bagging ensemble of 100 trees using Gini Impurity for split quality.
+\end{itemize}
+
+We intentionally abstained from extensive hyperparameter grid-searching. The goal was to test whether the \textit{information} contained in the features was sufficient for a standard algorithm to extract an edge, rather than testing the limits of hyperparameter optimization.
+
+\subsection{Validation Protocol: Preventing Look-Ahead Bias}
+The most common error in forecasting studies is "cheating" by shuffling the data. If a model is trained on data from 2010 and 2020 mixed together to predict a game in 2015, the model implicitly learns the future trends.
+
+To avoid this, we used a "Walk-Forward" approach:
+\begin{itemize}
+    \item We started by training the model \textit{only} on data from 2000 to 2005.
+    \item We then asked it to predict the games in 2006.
+    \item After 2006 finished, we added that data to the training set and asked it to predict 2007.
+\end{itemize}
+This process was repeated season by season until 2021. This mimics exactly how a real-world analyst operates: making decisions based only on what happened yesterday, never on what will happen tomorrow.
+
+% --- RESULTS ---
+\section{Results and Analysis}
+
+We analyzed the performance of three machine learning models—XGBoost, LightGBM, and Random Forest—over the 15-year validation period (2006–2021). The results reveal a disconnect between predictive accuracy and financial success.
+
+\begin{table}[htbp]
+\centering
+\caption{Walk-Forward Validation Results (2006-2021)}
+\label{tab:walkforward}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{ROI (\%)} & \textbf{Total PnL (\$)} & \textbf{Brier Score} \\ \midrule
+XGBoost        & 51.07\%           & \textbf{+0.29\%}           & \textbf{+\$1,611}                & 0.638                \\
+LightGBM       & 51.79\%           & -1.10\%           & -\$6,092                & 0.609                \\
+Random Forest  & \textbf{52.83\%}           & -2.01\%           & -\$11,049               & \textbf{0.586}                \\ \bottomrule
+\end{tabular}
+\end{table}
+
+As shown in Table \ref{tab:walkforward}, the model with the highest raw accuracy (Random Forest, 52.83\%) generated the largest financial loss (-\$11,049). Conversely, XGBoost, which had the lowest accuracy (51.07\%), was the only model to generate a profit. This validates the "Accuracy Paradox" in betting markets: optimizing for the frequency of wins often leads to betting on "safe" favorites with poor value, resulting in negligible returns or a slow bleed of capital.
+
+\subsection{Are the Models Just Copying the Odds?}
+A primary concern was whether the models were simply mimicking the bookmaker's probabilities to minimize error. To test for informational independence, we utilized the Diebold-Mariano test \cite{diebold1995}.
+
+The test returned significant statistics for both XGBoost (11.58, $p < 0.0001$) and LightGBM (8.74, $p < 0.0001$). Statistically, this confirms that the models are distinct from the market; they are identifying unique patterns in the Rolling Window (L5) features rather than just regressing to the implied odds.
+
+However, distinctness does not imply superiority. When comparing the best model (XGBoost) against a common "Bet on Favorite" strategy, the difference yielded a p-value of 0.054. Strictly speaking, this falls just short of the 0.05 threshold for statistical significance. This suggests that while the AI found a signal, that signal was not strong enough to decisively outperform a simple heuristic over the full sample size.
+
+\subsection{The "Draw" Blind Spot}
+To understand why high accuracy failed to translate into robust profits, we analyzed the specific betting behaviors of the models (Fig. \ref{fig:bias_check}).
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_confusion_matrices.png}
+        \caption{Confusion Matrices}
+        \label{fig:conf_matrix}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_bet_distribution.png}
+        \caption{Bet Distribution by Outcome}
+        \label{fig:bet_dist}
+    \end{subfigure}
+    \caption{(a) The Confusion Matrices reveal a systemic failure to predict Draws (center column). (b) The Bet Distribution shows the models compensating for this uncertainty by over-betting on the Home Team (right bars), effectively "chasing" the home-field advantage.}
+    \label{fig:bias_check}
+\end{figure}
+
+The Confusion Matrices (Fig. \ref{fig:conf_matrix}) reveal a flaw: the models are "risk-averse." They almost never successfully predict a Draw, which is typically the outcome with the highest variance but also significant value. Instead, as seen in Fig. \ref{fig:bet_dist}, they aggressively bet on the Home Team. By avoiding the risky Draw calls, the models artificially inflate their accuracy (since Home wins are common) but miss the high-odds opportunities necessary to overcome the bookmaker's margin.
+
+\subsection{The Timeline of Profitability (Alpha Decay)}
+While the models were distinct, they were not consistently profitable. When we broke down the returns year by year, a distinct pattern emerged (Fig. \ref{fig:alpha_decay_combined}). This phenomenon is often called "Alpha Decay"—the tendency for a profitable strategy to stop working as the market adapts.
+
+\begin{itemize}
+    \item \textbf{Phase I: Market Inefficiency (2006–2014):} In the earlier years of our simulation, the XGBoost model showed strong performance. It generated positive returns in several seasons, peaking with an +18.31\% return on investment in 2014. During this era, the "edge" was real. Crucially, the model's advantage during this period was large enough to overcome the "vigorish" (the bookmaker's built-in fee of approx. 4\%--7\%), resulting in net profit.
+    \item \textbf{Phase II: Market Correction (2015–2021):} Around 2015, the trend reversed. The returns became highly volatile and failed to sustain growth, suffering significant drawdowns in 2017 (-15.10\%) and 2020 (-13.24\%). While the models still found patterns, the signal was too weak to overcome the bookmaker's margin.
+\end{itemize}
+
+This timeline aligns with the broader modernization of sports betting. As bookmakers integrated their own advanced algorithms and real-time data feeds around the mid-2010s, the inefficiencies that our models exploited in the early data likely vanished.
+
+To verify that the models didn't simply degrade in quality, we analyzed the stability of their error rates comparing the profitable early era (2006–2012) against the losing late era (2015–2021). We found that the Mean Brier Error remained stable (0.242 vs 0.234). Crucially, a Kolmogorov-Smirnov (KS) test on the error distributions yielded a p-value of 0.29, failing to reject the null hypothesis. This confirms that the model's predictive distribution did not fundamentally change; rather, the market's efficiency threshold increased.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_alpha_decay.png}
+        \caption{Long-term Trend}
+        \label{fig:alpha_decay_trend}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_temporal_roi.png}
+        \caption{Year-over-Year Volatility}
+        \label{fig:alpha_decay_lines}
+    \end{subfigure}
+    \caption{Alpha Decay Analysis. (a) The stylized trend showing the "Golden Age" (green) vs the "Efficient Era" (red). (b) The raw performance lines for all three models, showing the specific volatility and the sharp drop-off for XGBoost (blue) after 2014.}
+    \label{fig:alpha_decay_combined}
+\end{figure}
+
+We can see this impact most clearly when looking at the cumulative wealth over time (Fig. \ref{fig:wealth}). If you had started using the XGBoost model in 2006, you would have seen a steady climb in profits. However, the data reveals a persistent "Alpha Decay." A linear trend analysis shows the model's edge over the bookmaker degrading consistently as the market became more efficient.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fig_cumulative_wealth.png}
+    \caption{Cumulative Wealth Accumulation. The green line (XGBoost) illustrates the "Golden Age" of sports betting, showing strong growth until 2015. After that point, the line flattens and becomes volatile, struggling to beat the simple "Market Benchmark" (grey dashed line) of just betting on the favorite.}
+    \label{fig:wealth}
+\end{figure}
+
+\subsection{Impact of Calibration Error on ROI}
+The most critical finding of our study lies in the difference between being "accurate" and being "calibrated." We simulated two betting strategies (Fig. \ref{fig:kelly_flat}). The first was "Flat Betting," where the model bet the same amount (\$100) on every game it liked. The second was the "Kelly Criterion," a famous mathematical formula that increases the bet size when the model is more confident. In theory, the Kelly strategy should make much more money.
+
+In our experiment, the opposite happened:
+\begin{itemize}
+    \item \textbf{Flat Betting Final Bankroll:} \$11,611
+    \item \textbf{Kelly Betting Final Bankroll:} \$9,206
+\end{itemize}
+
+Why did the "smarter" mathematical strategy lose \$2,400 compared to the simple one? The answer is the "Expected Calibration Error" (ECE), which we measured at \textbf{0.1109}. This means that when the model said, "I am 60\% sure this team will win," the team actually won only 49\% of the time. The model was chronically overconfident. Because it overestimated its own edge, the Kelly formula commanded it to make bets that were too large, amplifying the losses.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_kelly_vs_flat.png}
+        \caption{Capital Growth: Flat vs. Kelly}
+        \label{fig:kelly_flat}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_calibration_curves.png}
+        \caption{Calibration Curve}
+        \label{fig:calibration}
+    \end{subfigure}
+    \caption{(a) The Kelly strategy (green line) underperformed the Flat strategy (grey line), a classic sign of overconfidence. (b) The calibration curve confirms this: the model's confidence lines are mostly below the "Perfectly Calibrated" dotted line, meaning it was consistently too optimistic.}
+\end{figure}
+
+To understand what the AI was actually looking at to make these confident (but wrong) predictions, we analyzed the Feature Importance (Fig. \ref{fig:shap}). The results showed that the Home Odds (0.33 importance) and Away Odds (0.24 importance) were the primary drivers. These market signals vastly outweighed team performance metrics like Away Avg Shots (0.13). The AI was effectively trying to read the bookmaker's mind rather than the game itself.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig_shap_summary.png}
+    \caption{SHAP Feature Importance. The blue bars represent how much each data point contributed to the AI's decision. The most important feature was "HomeOdds"—the price set by the bookmaker. This suggests the AI spent more effort analyzing the market price than the actual team statistics (like Shots or Points).}
+    \label{fig:shap}
+\end{figure}
+
+\subsection{Risk Assessment via Monte Carlo Simulation}
+Averages can be misleading. Just because the "average" simulation made a small profit doesn't mean a real person would. To see the true risk, we ran 20,000 simulations of the best performing strategy (XGBoost) to see the range of possible outcomes for a bettor.
+
+The results (Fig. \ref{fig:monte_carlo_hist}) were sobering. While the strategy was profitable 58.3\% of the time, the risk profile reveals hidden dangers. The strategy achieved a Sortino Ratio of 0.38, but the risk profile is dangerous. As shown in Figure \ref{fig:monte_carlo_hist}, \textbf{41.7\%} of all simulated lifetimes failed to generate a profit, with \textbf{5.1\%} resulting in total bankruptcy. Furthermore, the 95\% Value at Risk (VaR) analysis shows significant downside potential in the worst-case scenarios.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{plot_hist_XGBoost_AI.png}
+    \caption{Monte Carlo Simulation (XGBoost). This histogram shows the final bankroll for 20,000 simulated players. While the average (orange line) is profitable at \$11,520, the distribution is wide. The red dashed line shows the starting \$10,000. Anyone to the left of that line lost money.}
+    \label{fig:monte_carlo_hist}
+\end{figure}
+
+When we compare this to standard human strategies (Fig. \ref{fig:comparative_kde}), we see that the AI (green curve) shifts the outcomes slightly to the right compared to simply betting on the Favorite (blue) or the Home Team (red). It doesn't guarantee a win, but it tilts the odds slightly in your favor—just not enough to overcome the variance for everyone.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{plot_comparative_kde.png}
+    \caption{Comparative Performance Density. This chart overlays the AI's performance (green) against human strategies. The AI curve is taller and shifted right, meaning it produces consistent, moderate results more often than the volatile human strategies.}
+    \label{fig:comparative_kde}
+\end{figure}
+
+% --- DISCUSSION ---
+\section{Discussion}
+
+Our findings offer a cautionary tale for the application of machine learning in competitive, human-driven markets. The failure of sophisticated models to generate a consistent profit in the modern era (post-2015) is not a failure of the algorithms themselves, but a testament to the efficiency of the market they are trying to beat.
+
+\subsection{The Evolution of the Opponent}
+The clear decay in performance over time supports the "Adaptive Market Hypothesis." In 2006, a standard gradient boosting algorithm could likely outpace the human compilers setting the odds. Today, those same bookmakers are almost certainly using similar, if not superior, automated systems. We are no longer playing against a human; we are playing against a mirror. The market has effectively "priced in" the very technology we are trying to use against it.
+
+\subsection{The Danger of Metric Fixation}
+This study also highlights a flaw in how data scientists typically evaluate models. In a classroom setting, we optimize for Accuracy or AUC (Area Under the Curve). By those standards, our models looked fine—they predicted match outcomes correctly more than half the time (approx 51\%). However, in an applied setting where risk management is key, "Accuracy" is a misleading metric.
+
+The failure of the Kelly Criterion strategy proves that \textbf{Calibration} is the more vital metric. A model that knows it is guessing (and bets small) is infinitely more useful than a model that thinks it is a genius (and bets big). The 11\% calibration error we observed is the difference between a viable investment strategy and a losing one.
+
+\subsection{Strategies for Mitigation}
+Our results showed that the standard Kelly Criterion failed due to parameter uncertainty—the model was too confident. This aligns with findings by Baker and McHale (2013), who suggest that exact Kelly betting is perilous when probability estimates are imperfect \cite{baker2013}. A "Fractional Kelly" approach (betting half or quarter of the recommended amount) is often proposed as a solution to this volatility.
+
+Furthermore, while our fundamental models struggled, other approaches exist. Kaunitz et al. (2017) demonstrated that strategies focusing purely on "consensus odds"—identifying outliers where one bookmaker is slow to update compared to the rest of the market—can still yield profits \cite{kaunitz2017}. This suggests that while predicting the \textit{game} is hard (as our study shows), predicting the \textit{market errors} might remain viable. Conversely, Boshnakov et al. (2017) achieved success using bivariate Weibull count models, suggesting that perhaps our feature set was too simplistic and that complex parametric models still hold value \cite{boshnakov2017}.
+
+% --- LIMITATIONS ---
+\section{Limitations}
+
+While this study provides robust empirical evidence regarding market efficiency, certain constraints in our scope and methodology must be acknowledged to contextualize the findings.
+
+\subsection{Data Availability and Feature Scope}
+Our sports betting analysis relied on a public dataset that, while historically extensive (2000–2021), was limited in feature depth. The dataset contained only match-level statistics and odds. We did not incorporate granular data points such as player-level injuries, lineup changes, or advanced metrics like Expected Goals (xG) simply because reliable historical data for these features was unavailable for the full twenty-year period. It remains an open question whether a model trained on such deep, granular data could uncover inefficiencies that our match-level models missed.
+
+\subsection{Closing Line Rigidity}
+Our Walk-Forward validation tested the models against the "Closing Odds"—the final price available before the match starts. The "Closing Line" is statistically proven to be the most accurate version of the market price. In a real-world scenario, professional bettors often target "Opening Odds" (days before the match), attempting to identify mispricing before the market corrects it. By testing against the Closing Line, we effectively forced our AI to beat the market at its strongest point. A model that fails against the Closing Line might still have been profitable against the softer Opening Line, though testing this hypothesis requires data that is rarely publicly available.
+
+
+\section{Conclusion}
+
+This study began with a simple question: Can standard machine learning algorithms outsmart a highly efficient prediction market? The answer, as it turns out, is a qualified "no"—but the reasons for that failure reveal a great deal about the state of modern data science.
+
+By benchmarking our models against twenty years of real-world betting data, we established that our algorithms identified unique, statistically distinct patterns in the football data. Yet, despite this technical success, they failed to generate a sustainable profit in the modern era.
+
+The evidence points to a market that has fundamentally changed. The clear decay in performance—from consistent profits in the mid-2000s to consistent losses after 2015—suggests that the window for simple algorithmic arbitrage has closed. The "edge" that data scientists look for has been smoothed out by the efficiency of the bookmakers.
+
+Most importantly, our results highlight a critical blind spot in how predictive models are built and tested. The fact that our models could predict the winner with respectable accuracy, yet lose money when betting with the Kelly Criterion, proves that \textbf{accuracy is not enough}. The models suffered from a significant calibration error, consistently overestimating their own certainty. In a low-margin, high-risk environment, this lack of self-awareness is fatal.
+
+Ultimately, this research suggests that in mature, adversarial environments, the challenge is no longer about building more complex models to find better answers. The challenge is building more honest models that know when they are guessing. As markets become more efficient, the most valuable trait in an algorithm is not just its ability to predict the future, but its ability to accurately measure its own doubt.
+
+% --- BIBLIOGRAPHY ---
+\begin{thebibliography}{99}
+
+\bibitem{fama1970}
+E.~F. Fama.
+\newblock Efficient capital markets: A review of theory and empirical work.
+\newblock \emph{The Journal of Finance}, 25(2):383--417, 1970.
+
+\bibitem{sauer1998}
+R.~D. Sauer.
+\newblock The economics of wagering markets.
+\newblock \emph{Journal of Economic Literature}, 36(4):2021--2064, 1998.
+
+\bibitem{levitt2004}
+S.~D. Levitt.
+\newblock Why are gambling markets organized so differently from financial markets?
+\newblock \emph{The Economic Journal}, 114(495):223--246, 2004.
+
+\bibitem{griffith1949}
+R.~M. Griffith.
+\newblock Odds adjustments by American horse-race bettors.
+\newblock \emph{American Journal of Psychology}, 62(2):290--294, 1949.
+
+\bibitem{newall2021}
+P.~W.~S. Newall and D.~Cortis.
+\newblock Are sports bettors biased toward longshots, favorites, or both? A literature review.
+\newblock \emph{Risks}, 9(1):22, 2021.
+
+\bibitem{angelini2019}
+G.~Angelini and L.~De Angelis.
+\newblock Efficiency of online football betting markets.
+\newblock \emph{International Journal of Forecasting}, 35(2):712--721, 2019.
+
+\bibitem{dixon1997}
+M.~J. Dixon and S.~G. Coles.
+\newblock Modelling association football scores and inefficiencies in the football betting market.
+\newblock \emph{Applied Statistics}, 46(2):265--280, 1997.
+
+\bibitem{wheatcroft2019}
+E.~Wheatcroft.
+\newblock Evaluating the impact of calibration on the profitability of betting strategies.
+\newblock \emph{International Journal of Forecasting}, 36(3):1079--1090, 2020.
+
+\bibitem{guo2017}
+C.~Guo, G.~Pleiss, Y.~Sun, and K.~Q. Weinberger.
+\newblock On Calibration of Modern Neural Networks.
+\newblock \emph{Proceedings of the 34th International Conference on Machine Learning}, 2017.
+
+\bibitem{kelly1956}
+J.~L. Kelly.
+\newblock A New Interpretation of Information Rate.
+\newblock \emph{The Bell System Technical Journal}, 35(4):917--926, 1956.
+
+\bibitem{walsh2024}
+A.~Walsh and A.~Joshi.
+\newblock Calibration is all you need: Maximizing utility in sports betting.
+\newblock \emph{arXiv preprint arXiv:2401.00000}, 2024.
+
+\bibitem{kaggleEPL}
+Louis Chen.
+\newblock Football Results and Betting Odds Data of EPL.
+\newblock Kaggle dataset, 2021.
+\newblock \url{https://www.kaggle.com/datasets/louischen7/football-results-and-betting-odds-data-of-epl}.
+
+\bibitem{diebold1995}
+F.~X. Diebold and R.~S. Mariano.
+\newblock Comparing Predictive Accuracy.
+\newblock \emph{Journal of Business \& Economic Statistics}, 13(3):253--263, 1995.
+
+\bibitem{baker2013}
+R.~D. Baker and I.~G. McHale.
+\newblock A time-varying hazard model for the exact time of goals in football.
+\newblock \emph{International Journal of Forecasting}, 29(4):684--692, 2013.
+
+\bibitem{kaunitz2017}
+L.~Kaunitz, S.~Zhong, and J.~Kreiner.
+\newblock Beating the bookies with their own numbers - and how the online sports betting market is rigged.
+\newblock \emph{arXiv preprint arXiv:1710.02824}, 2017.
+
+\bibitem{boshnakov2017}
+G.~N. Boshnakov, T.~Kharrat, and I.~G. McHale.
+\newblock A bivariate Weibull count model for forecasting association football scores.
+\newblock \emph{International Journal of Forecasting}, 33(2):458--466, 2017.
+
+\end{thebibliography}
+
+\end{document}

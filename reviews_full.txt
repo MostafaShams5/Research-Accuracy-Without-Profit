@@ -1,0 +1,402 @@
+
+
+--- REVIEW: Peer-Reviews/1V1I6S.pdf ---
+
+14 January 2026 · CC-BY 4.0
+
+Qeios
+
+Peer Review
+
+Review of: "Accuracy Without Profit: A
+Statistical Evaluation of Machine
+Learning Profitability in the English
+Premier League"
+Ben Powell1
+1. University of York, United Kingdom
+
+This is a well-written paper with credible, useful messages for people working with or interested in
+machine learning. Perhaps first among those messages is that it is exceedingly difficult (arguably futile?)
+to forecast the outcomes of sports matches sufficiently better than the market/bookmakers to be
+profitable (i.e., to overcome the large profit margins of the bookmakers).
+There are a few things I would suggest to improve future iterations of the paper:
+The figures have not rendered very well on the website. They are too small to read, but this is probably
+partly a problem with the website itself.
+Section 4.2 was not sufficiently clear. The words ‘variance’, ‘significant’, and ‘value’ have technical and
+non-technical meanings, and it is not completely clear how the author wants to use them.
+In Section 4.4, I think the author starts to refer to the (specific) XGBoost model as the (generic) 'AI'. I'm
+not sure this is a good idea.
+The nature of the simulation exercise in Section 4.5 wasn't clear to me. Were the match statistics
+simulated from a model? Was this the same model used to predict the matches?
+I think the central message, that it is critically important to have well-calibrated probabilistic forecasts
+when you are being scored according to a form of log-scoring rule, is sound and worth communicating. If
+the authors wanted to expand on this point, I would suggest looking at the 1987 paper by Murphy and
+Winkler in which the role of calibration in various probability scores is considered. From a machine
+learning perspective, the authors might also want to write more about overfitting, which I think their
+
+qeios.com
+
+doi.org/10.32388/1V1I6S
+
+1
+
+models' overconfidence is a symptom of. This topic could reference some recent, provocative work on
+benign overfitting by Bartlett, for example.
+
+Declarations
+Potential competing interests: No potential competing interests to declare.
+
+qeios.com
+
+doi.org/10.32388/1V1I6S
+
+2
+
+
+
+--- REVIEW: Peer-Reviews/7QLQRV.pdf ---
+
+Qeios
+
+1 March 2026 · CC-BY 4.0
+
+Peer Review
+
+Review of: "Accuracy Without Profit: A
+Statistical Evaluation of Machine
+Learning Profitability in the English
+Premier League"
+Andrew Grant1
+1. School of Finance, University of Sydney, Sydney, Australia
+
+The paper looks at whether the use of well-known machine learning algorithms can help find profitable
+forecasts in the English Premier League betting market. In general, the paper finds that statistical
+accuracy is reasonable, but this accuracy does not translate into profits against a bookmaker (reliably)
+over a long sample period. While it is interesting to see the relative performance of the models considered
+here (some well-known and implementable models such as xGBoost and randomforest, the results are not
+overly surprising.
+Any gambling strategy is going to have some variance season to season, as a consequence of uncertain
+outcomes - and a well-known deficiency of the Kelly criterion is that it might overbet in situations of
+greater certainty of outcomes. The most interesting plot in the paper is Figure 4(b), which shows that the
+models perform quite poorly in terms of calibration, particularly when odds are high. In other words, the
+models tend to perform poorly on extreme favourites, which is precisely when the Kelly criterion will
+assign a large stake. This is one of the main motivations for ‘fractional-Kelly’ strategies, or more precise
+bankroll management.
+Some other aspects are worth considering for future research. Firstly, modern predictions would use
+more complex variables (as analytics has improved substantially since 2001). It would be very useful to
+know whether they can help to beat the bookmaker (at least in some subsample). It may be that other
+data could provide useful insights into whether a draw is likely - consider things like Expected Goals or
+player-specific variables. Secondly, correct application of the Kelly criterion will require consideration of
+‘diversifying bets’ on the draw outcome (in addition to home/away). I would have liked to see this in the
+
+qeios.com
+
+doi.org/10.32388/7QLQRV
+
+1
+
+breakdown of profitability. Similarly, issues such as games kicking off simultaneously (which will affect
+staking amounts), cross-market arbitrage, bookmaker pricing strategies, and model retraining would be
+helpful to discuss. There is a lot of literature on sports betting that covers these topics.
+Overall, the paper does highlight some key aspects of simply applying machine learning and expecting
+that statistical accuracy translates into profitability. It is not just accuracy in prediction, but how the
+decision-maker employs the probabilities that makes a difference.
+
+Declarations
+Potential competing interests: No potential competing interests to declare.
+
+qeios.com
+
+doi.org/10.32388/7QLQRV
+
+2
+
+
+
+--- REVIEW: Peer-Reviews/881LR9.pdf ---
+
+14 January 2026 · CC-BY 4.0
+
+Qeios
+
+Peer Review
+
+Review of: "Accuracy Without Profit: A
+Statistical Evaluation of Machine
+Learning Profitability in the English
+Premier League"
+Mustafa Feza Tahmaz1,2
+1. Faculty of Economics and Administrative Sciences, Beykent University, Turkey; 2. Faculty of Economics, İstanbul University, Turkey
+
+The subject of the paper is very interesting, and I find the topic to be timely and relevant to my expertise.
+It seems to be written with a good grasp of the previous literature on what methods to apply, what
+questions to ask, and how to validate tests, which show rigor and promise. However, I would like to point
+out a few recommendations from my part.
+Primarily, the reporting seems a little messy, and some components of the paper seem underexplained.
+The methodology could have been made clearer with a conceptual model of the paper. I also recommend
+a unified evaluation table demonstrating the use of the same out-of-sample metrics under the same
+walk-forward folds, reporting multiclass logloss, multiclass Brier score, and ECE for all models across all
+folds.
+Secondly, the feature selection of Points, Goals Conceded, Shots, Shots on Target, and Corners may be too
+coarse for the models to capture desired tactical match patterns essential for classification. The logic
+behind the use of rolling averages is good, as it restricts data leakage. Given the acknowledged feature
+limitations, if it was possible, adding more sensitive metrics or strength proxies such as ELO Ratings,
+Poisson/Bayesian hierarchical strength ratings, and xG-metrics to support feature richness and test
+robustness would have improved the study remarkably.
+Third, including market odds in the training data risks the models implicitly learning and may lead to a
+noisy transformation of the odds rather than adding independent signals. This concern is relevant in the
+SHAP results and the confusion matrices, which suggest indications of home team bias and draw
+prediction bias in the results. This may help explain why all models had limited ROI. Additionally, in my
+
+qeios.com
+
+doi.org/10.32388/881LR9
+
+1
+
+opinion, the DM test alone isn’t sufficient to demonstrate meaningful distinction from or superiority to
+market odds. I recommend also including Betting Odds average stats in the Walk Forward Validation
+Results table just for easier comparison and adding another type of similarity measure between marketimplied probabilities and model probabilities of your choice to demonstrate distinction.
+
+Declarations
+Potential competing interests: No potential competing interests to declare.
+
+qeios.com
+
+doi.org/10.32388/881LR9
+
+2
+
+
+
+--- REVIEW: Peer-Reviews/BMIIF3.pdf ---
+
+21 December 2025 · CC-BY 4.0
+
+Qeios
+
+Peer Review
+
+Review of: "Accuracy Without Profit: A
+Statistical Evaluation of Machine
+Learning Profitability in the English
+Premier League"
+Parisa Omidmand1
+1. Department of Economics, Texas Tech University, United States
+
+I enjoyed reading this paper; the question is interesting, and the overall methodology is sound. However,
+several points need attention.
+First, the claim that the market fundamentally changed around 2015 is central, but it is currently
+supported mainly by visual inspection. A formal structural break test or another clear statistical test
+would make this argument much more convincing.
+Second, the dataset should be cited and described more clearly in the main text (source, coverage, and any
+key preprocessing choices), rather than only referring to it as a “public dataset.”
+Third, your own SHAP results suggest the models rely heavily on bookmaker odds relative to team
+statistics. This is an important finding and should be discussed more directly, since it affects how we
+interpret the results and what the study is truly testing.
+
+Declarations
+Potential competing interests: No potential competing interests to declare.
+
+qeios.com
+
+doi.org/10.32388/BMIIF3
+
+1
+
+
+
+--- REVIEW: Peer-Reviews/H14KV1.pdf ---
+
+13 February 2026 · CC-BY 4.0
+
+Qeios
+
+Peer Review
+
+Review of: "Accuracy Without Profit: A
+Statistical Evaluation of Machine
+Learning Profitability in the English
+Premier League"
+John Fry1
+1. Mathematics, University of Hull, United Kingdom
+
+I think this is an interesting and thoughtful paper on the application of machine learning models to
+football betting markets.
+The basic message is that in efficient markets, prices reflect available information. It is hard to trade
+profitably in these markets - especially once transaction costs are taken into account. Profitable trading
+may also be different from just making accurate predictions per se. Further, if bookmakers are viewed as
+an “adverserial agent”, you would expect, as reported, that the ability to trade profitably using machine
+learning methods has decreased over time.
+Some questions for the authors:
+Page 7. Model breakdown during 2020. Is this due to the pandemic and matches being played behind
+closed doors with no fans? Does this period then “pollute” later forecasting efforts?
+Page 9. I think it would be good to have some more of the maths details here so that the paper is selfcontained and could, for instance, be given to project students to follow up on. For example, what does it
+mean for the flat betting strategy to “like a bet”? When does the Kelly criterion “like a bet”? Does the
+Kelly strategy bet too often?
+
+qeios.com
+
+doi.org/10.32388/H14KV1
+
+1
+
+Page 14. Problem with the Kelly strategy? Could this be resolved by combining a Kelly-type approach with
+parameter uncertainty?
+
+Declarations
+Potential competing interests: No potential competing interests to declare.
+
+qeios.com
+
+doi.org/10.32388/H14KV1
+
+2
+
+
+
+--- REVIEW: Peer-Reviews/IKUWHV.pdf ---
+
+14 January 2026 · CC-BY 4.0
+
+Qeios
+
+Peer Review
+
+Review of: "Accuracy Without Profit: A
+Statistical Evaluation of Machine
+Learning Profitability in the English
+Premier League"
+Elia Yathie Matsumoto1
+1. Sao Paulo School of Economics, Fundação Getúlio Vargas, São Paulo, Brazil
+
+RELEVANCE: Excellent, Good, Acceptable, Little, None
+TECHNICAL/SCIENTIFIC RIGOUR: Excellent, Solid, Valid, Marginal, Questionable
+QUALITY OF PRESENTATION: Excellent, Well Written, Readable, Revision needed, Unacceptable
+NOVELTY/ORIGINALITY: Pioneering, Significant, Interesting, Minor, None
+OVERALL: Strongly Acceptable, Accepted, Neutral, Rejected, Strongly rejected
+Main paper contributions and Positive aspects
+This paper provides a demonstration of why using just predictive accuracy can be a misleading metric for
+profitability in efficient markets like sports betting. By analyzing English Premier League data, the
+author showed that while machine learning models can achieve statistically distinct forecasts, they fail to
+generate consistent profits, primarily due to significant calibration errors that cause overconfident bets.
+This insight positively shifts the focus from merely optimizing accuracy to prioritizing well-calibrated
+probability estimates—an important lesson for applying predictive models in any real-world, adversarial
+decision-making context.
+Positive aspects:
+The text makes a balanced discussion about machine learning techniques' outcomes and the nuances
+of human-driven markets.
+The feature engineering process is well described, detailing how rolling metrics like "Last 5 Games"
+transform raw match data into actionable trends.
+
+qeios.com
+
+doi.org/10.32388/IKUWHV
+
+1
+
+Methodologically, the study seems cautious, employing strict walk-forward validation to definitively
+eliminate look-ahead bias, thereby ensuring real-world applicability.
+The application of the Diebold-Mariano test provided statistical evidence that the model outputs are
+distinct from market odds, confirming they extract unique signals rather than merely replicating
+consensus.
+Most importantly, when faced with the apparent paradox of decent accuracy (~51%) coupled with poor
+profitability, the author delivers a diagnostic: the “models' risk-averse" avoidance of high-value draws
+and the critical phenomenon of "Alpha Decay" as the market adapted post-2015.
+Observed deficiencies and Suggestions for improvements
+This section 2 (Related Work and Background) provides a conceptual foundation but could be
+strengthened by broadening its references. The literature cited is somewhat limited, particularly
+regarding recent advances in probability calibration techniques (e.g., modern post-hoc calibration
+methods) and a wider array of contemporary predictive models used in sports analytics. Expanding this
+review would better contextualize the study within current methodological discussions.
+While the study provides good analysis using established tree-based ensembles, its methodological scope
+presents opportunities for enhancement. The exclusive reliance on Random Forest, XGBoost, and
+LightGBM means the input space is consistently explored through similar, non-linear splitting
+mechanisms, potentially missing insights from alternative model families.
+Suggestions:
+A possible addition would be to include a Generalized Linear Model (GLM), such as multinomial
+logistic regression, as a benchmark; its linear assumptions might yield surprisingly robust or
+interpretable baselines, clarifying whether complexity is necessary.
+Furthermore, evaluating performance via a weighted accuracy metric could better reflect the
+economic value of correctly predicting rare, high-odds outcomes like draws.
+Lastly, to improve clarity, separating the currently combined Figure 1(a) and 1(b) into two distinct
+figures would enhance readability (confusion matrices are unreadable).
+These changes could strengthen the experimental design and the communicative power of the results.
+
+Declarations
+qeios.com
+
+doi.org/10.32388/IKUWHV
+
+2
+
+Potential competing interests: No potential competing interests to declare.
+
+qeios.com
+
+doi.org/10.32388/IKUWHV
+
+3
+
+
+
+--- REVIEW: Peer-Reviews/T0FKED.pdf ---
+
+15 March 2026 · CC-BY 4.0
+
+Qeios
+
+Peer Review
+
+Review of: "Accuracy Without Profit: A
+Statistical Evaluation of Machine
+Learning Profitability in the English
+Premier League"
+Yasuhiro Yoshida1
+1. Independent researcher
+
+This paper studies whether machine learning models can make consistent profits in the English Premier
+League betting market. The main conclusion is interesting: even when the models achieve reasonable
+prediction performance, it is still difficult to obtain stable returns because of alpha decay and calibration
+error. I think this is a meaningful topic, and the paper is easy to follow overall.
+I appreciate that the authors use the Diebold-Mariano test to examine whether the model predictions are
+statistically different from the market odds. I also appreciate that the code is publicly available, which
+improves transparency and reproducibility.
+I have several suggestions that could strengthen the paper.
+First, the compared models are mostly tree-based methods. It may be helpful to include an additional
+benchmark, such as a neural network model, to show whether the conclusions are specific to tree models
+or more general.
+Second, the training data expands year by year. Because the paper discusses market change over time, it
+would be interesting to compare this setting with a rolling-window approach, for example, training only
+on the most recent five years. This may also help show whether feature importance changes over time.
+Third, the paper should include basic descriptive statistics of the dataset, such as the number of matches
+and the proportions of home wins, draws, and away wins. This would help readers better understand the
+prediction task.
+
+qeios.com
+
+doi.org/10.32388/T0FKED
+
+1
+
+Fourth, the description of the simulation is not detailed enough. It is not clear what exactly was varied or
+resampled in the 20,000 simulation runs. More explanation is needed for reproducibility.
+Fifth, the paper argues that calibration is very important. In that case, it would be useful to perform an
+actual calibration step using past training data or validation data, and then compare the calibrated and
+uncalibrated results on the test data.
+Finally, to better understand the role of the L5 features, I would like to see an ablation study: odds-only,
+L5-only, and odds-plus-L5 models. This would clarify how much additional value the L5 features provide.
+Overall, I think the paper addresses an interesting and practical question, and it has good points such as
+transparency and a clear experimental setup. At the same time, the paper would be stronger with more
+detailed analysis, a clearer simulation description, and additional comparison experiments.
+
+Declarations
+Potential competing interests: No potential competing interests to declare.
+
+qeios.com
+
+doi.org/10.32388/T0FKED
+
+2
+
+
